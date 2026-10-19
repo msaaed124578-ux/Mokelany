@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشوارك براحتك | Your Ride, Your Way</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo (Arabic) & Montserrat (Latin) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#FACC15',
+                            500: '#D97706',
+                            600: '#B45309',
+                            gradientStart: '#F59E0B',
+                            gradientEnd: '#D97706',
+                        },
+                        darkObsidian: '#0B0F17',
+                        cardBg: 'rgba(17, 24, 39, 0.85)',
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', 'Montserrat', sans-serif;
+            background-color: #05070a;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* High quality Egyptian landmark background with gradient overlay */
+        .hero-bg {
+            background: linear-gradient(180deg, rgba(5, 7, 10, 0.75) 0%, rgba(5, 7, 10, 0.92) 80%, #05070a 100%),
+                        url('https://images.unsplash.com/photo-1568322445389-f64ac2515020?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .gold-border-glow {
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.25);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .gold-border-glow:hover {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.45);
+            border-color: rgba(245, 158, 11, 0.7);
+        }
+
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphic styling */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-blur {
+            backdrop-filter: blur(8px);
+        }
+
+        /* Smooth tab button transitions */
+        .lang-btn.active {
+            background-color: #D97706;
+            color: #ffffff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between hero-bg text-gray-100">
+
+    <!-- TOP HEADER / NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-gray-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- LOGO / BRAND NAME -->
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-600 to-amber-400 flex items-center justify-center text-gray-900 font-extrabold text-xl shadow-lg">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <div>
+                    <span class="text-xl sm:text-2xl font-black tracking-wide gold-text-gradient block" id="brand-title">مشوارك براحتك</span>
+                    <span class="text-xs text-gray-400 hidden sm:block" id="brand-tagline">سائق خاص بالحجز المسبق بالساعات واليوم</span>
+                </div>
+            </div>
+
+            <!-- CONTROLS: PHONE CALL & LANGUAGE SWITCHER -->
+            <div class="flex items-center space-x-3 space-x-reverse">
+                
+                <!-- HIDDEN PHONE NUMBER BUTTON -->
+                <div class="relative">
+                    <button id="call-btn" onclick="togglePhoneNumber()" class="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-gray-950 font-bold px-4 py-2.5 rounded-full shadow-lg transition-all transform active:scale-95 text-sm sm:text-base">
+                        <i class="fa-solid fa-phone animate-pulse"></i>
+                        <span id="phone-display-text" data-i18n="call_now">اتصل الآن</span>
+                    </button>
+                </div>
+
+                <!-- LANGUAGE SELECTOR DROPDOWN -->
+                <div class="relative">
+                    <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-gray-900 text-amber-400 border border-amber-500/40 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-md">
+                        <option value="ar">العربية (AR)</option>
+                        <option value="en">English (EN)</option>
+                        <option value="de">Deutsch (DE)</option>
+                        <option value="zh">中文 (ZH)</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- HERO SECTION -->
+        <section class="max-w-5xl mx-auto px-4 py-12 sm:py-16 text-center">
+            <div class="inline-flex items-center space-x-2 space-x-reverse bg-amber-500/10 border border-amber-500/30 px-4 py-1.5 rounded-full text-amber-400 text-xs sm:text-sm font-medium mb-6">
+                <i class="fa-solid fa-star text-amber-400"></i>
+                <span id="hero-badge">خدمة مخصصة بالساعات واليوم داخل القاهرة والجيزة</span>
+            </div>
+            
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6" id="hero-title">
+                راحتك وأمانك في كل مشوار <br>
+                <span class="gold-text-gradient">سائق وعربية بالحجز المسبق</span>
+            </h1>
+            
+            <p class="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8" id="hero-subtitle">
+                تأكيد المواعيد بالدقيقة، سيارة مريحة وحديثة (Hyundai Elantra AD)، وهدوء تام لتأدية أعمالك ومشاويرك اليومية بكل انسيابية بدون مشقة طلب سيارات متكررة.
+            </p>
+
+            <!-- VEHICLE & AMENITIES PIPES -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto mb-12 text-center text-xs sm:text-sm">
+                <div class="glass-panel p-3 rounded-xl border border-amber-500/20 flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-car text-amber-400 text-xl mb-1"></i>
+                    <span id="amenity-1" class="font-semibold text-gray-200">النترا AD مريحة</span>
+                </div>
+                <div class="glass-panel p-3 rounded-xl border border-amber-500/20 flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-wifi text-amber-400 text-xl mb-1"></i>
+                    <span id="amenity-2" class="font-semibold text-gray-200">إنترنت Wi-Fi سريع</span>
+                </div>
+                <div class="glass-panel p-3 rounded-xl border border-amber-500/20 flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-bolt text-amber-400 text-xl mb-1"></i>
+                    <span id="amenity-3" class="font-semibold text-gray-200">شواحن فائقة السرعة</span>
+                </div>
+                <div class="glass-panel p-3 rounded-xl border border-amber-500/20 flex flex-col items-center justify-center">
+                    <i class="fa-solid fa-bottle-water text-amber-400 text-xl mb-1"></i>
+                    <span id="amenity-4" class="font-semibold text-gray-200">مياه باردة ومعقمات</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PACKAGES SECTION -->
+        <section id="packages" class="max-w-7xl mx-auto px-4 py-8">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl sm:text-4xl font-extrabold gold-text-gradient mb-3" id="packages-heading">باقات الخدمة المتاحة</h2>
+                <p class="text-sm sm:text-base text-gray-400 max-w-xl mx-auto" id="packages-subheading">اختر الباقة المناسبة لاحتياجاتك اليومية ووفر وقتك ومجهودك</p>
+            </div>
+
+            <!-- CARDS GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                
+                <!-- PACKAGE 1: 3 HOURS -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gold-border-glow transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r from-amber-500 to-yellow-300"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-full text-xs" id="pkg1-badge">3 ساعات</span>
+                            <i class="fa-solid fa-stopwatch text-2xl text-amber-400"></i>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2" id="pkg1-title">باقة المشاوير السريعة</h3>
+                        <p class="text-xs sm:text-sm text-gray-300 mb-6 min-h-[40px]" id="pkg1-desc">بنوك، عيادات، مصالح حكومية، أو كذا مشوار في نفس المنطقة.</p>
+                        
+                        <div class="mb-6 p-4 rounded-2xl bg-gray-900/80 border border-gray-800 text-center">
+                            <span class="text-3xl sm:text-4xl font-black text-amber-400">900</span>
+                            <span class="text-xs sm:text-sm text-gray-400 font-bold" id="pkg1-curr">ج.م</span>
+                        </div>
+                    </div>
+
+                    <button onclick="selectPackage('3_hours')" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-gray-950 font-extrabold shadow-lg transition-all text-sm" id="pkg1-btn">
+                        اختيار الباقة
+                    </button>
+                </div>
+
+                <!-- PACKAGE 2: 5 HOURS (HALF DAY) - POPULAR -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gold-border-glow transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden group border-2 border-amber-500">
+                    <div class="absolute top-0 right-0 left-0 bg-amber-500 text-gray-950 font-bold text-xs text-center py-1 uppercase tracking-wider" id="pkg2-popular">الأكثر طلبًا</div>
+                    <div class="mt-3">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-full text-xs" id="pkg2-badge">5 ساعات</span>
+                            <i class="fa-solid fa-briefcase text-2xl text-amber-400"></i>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2" id="pkg2-title">باقة نصف اليوم</h3>
+                        <p class="text-xs sm:text-sm text-gray-300 mb-6 min-h-[40px]" id="pkg2-desc">اجتماعات، تسوق، زيارات عائلية، أو يوم مشاوير متتالية.</p>
+                        
+                        <div class="mb-6 p-4 rounded-2xl bg-gray-900/80 border border-amber-500/30 text-center">
+                            <span class="text-3xl sm:text-4xl font-black text-amber-400">1,400</span>
+                            <span class="text-xs sm:text-sm text-gray-400 font-bold" id="pkg2-curr">ج.م</span>
+                        </div>
+                    </div>
+
+                    <button onclick="selectPackage('5_hours')" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-gray-950 font-black shadow-xl transition-all text-sm" id="pkg2-btn">
+                        اختيار الباقة
+                    </button>
+                </div>
+
+                <!-- PACKAGE 3: 8 HOURS (FULL DAY) -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between gold-border-glow transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-r from-amber-500 to-yellow-300"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-full text-xs" id="pkg3-badge">8 ساعات</span>
+                            <i class="fa-solid fa-crown text-2xl text-amber-400"></i>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2" id="pkg3-title">باقة اليوم الكامل</h3>
+                        <p class="text-xs sm:text-sm text-gray-300 mb-6 min-h-[40px]" id="pkg3-desc">يوم شغل كامل، ضيوف من خارج القاهرة، أو تنقلات خاصة متعددة.</p>
+                        
+                        <div class="mb-6 p-4 rounded-2xl bg-gray-900/80 border border-gray-800 text-center">
+                            <span class="text-3xl sm:text-4xl font-black text-amber-400">2,000</span>
+                            <span class="text-xs sm:text-sm text-gray-400 font-bold" id="pkg3-curr">ج.م</span>
+                        </div>
+                    </div>
+
+                    <button onclick="selectPackage('8_hours')" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-gray-950 font-extrabold shadow-lg transition-all text-sm" id="pkg3-btn">
+                        اختيار الباقة
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- TERMS & CALCULATION NOTICE -->
+            <div class="max-w-4xl mx-auto mt-10 p-5 rounded-2xl bg-amber-950/30 border border-amber-500/40 text-center text-xs sm:text-sm text-amber-200/90 leading-relaxed">
+                <i class="fa-solid fa-circle-info text-amber-400 ml-1"></i>
+                <span id="terms-notice">
+                    <strong>ملحوظة هامة:</strong> هذه الساعات مقدرة على أن كل ساعة تساوي 20 كم، وفي حالة تعدي الكيلومترات المسموحة يتم حساب الكيلو الزيادة بـ 12.5 ج.م، وكل ساعة إضافية بـ 300 ج.م.
+                </span>
+            </div>
+        </section>
+
+        <!-- BOOKING FORM SECTION -->
+        <section id="booking" class="max-w-3xl mx-auto px-4 py-12">
+            <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-amber-500/30 shadow-2xl relative">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold gold-text-gradient mb-2" id="form-heading">نموذج الحجز المسبق</h2>
+                    <p class="text-xs sm:text-sm text-gray-400" id="form-subheading">قم بتعبئة البيانات لتأكيد حجزك وتحويلك مباشرة لمحادثة الواتساب</p>
+                </div>
+
+                <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                    
+                    <!-- PACKAGE SELECTION DROPDOWN -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-300 mb-2" id="lbl-package">اختر الباقة المطلوب حجزها</label>
+                        <select id="field-package" required class="w-full bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50">
+                            <option value="" id="opt-select">-- اختر الباقة --</option>
+                            <option value="3_hours" id="opt-pkg1">باقة المشاوير السريعة (3 ساعات - 900 ج.م)</option>
+                            <option value="5_hours" id="opt-pkg2">باقة نصف اليوم (5 ساعات - 1,400 ج.م)</option>
+                            <option value="8_hours" id="opt-pkg3">باقة اليوم الكامل (8 ساعات - 2,000 ج.م)</option>
+                        </select>
+                    </div>
+
+                    <!-- CUSTOMER NAME & WHATSAPP NUMBER -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs sm:text-sm font-semibold text-gray-300 mb-2" id="lbl-name">اسم العميل بالكامل</label>
+                            <input type="text" id="field-name" required placeholder="مثال: أحمد محمد" class="w-full bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs sm:text-sm font-semibold text-gray-300 mb-2" id="lbl-phone">رقم الواتساب للتواصل</label>
+                            <input type="tel" id="field-phone" required placeholder="010XXXXXXXX" class="w-full bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 text-left dir-ltr">
+                        </div>
+                    </div>
+
+                    <!-- DATE & TIME PICKERS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs sm:text-sm font-semibold text-gray-300 mb-2" id="lbl-date">تاريخ الحجز المطلوب</label>
+                            <input type="date" id="field-date" required class="w-full bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50">
+                        </div>
+                        <div>
+                            <label class="block text-xs sm:text-sm font-semibold text-gray-300 mb-2" id="lbl-time">ساعة الالتقاء</label>
+                            <input type="time" id="field-time" required class="w-full bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50">
+                        </div>
+                    </div>
+
+                    <!-- PICKUP LOCATION -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-300 mb-2" id="lbl-location">مكان الالتقاء (العنوان بالتفصيل أو المنطقة)</label>
+                        <input type="text" id="field-location" required placeholder="مثال: التجمع الخامس - بالقرب من شارع التسعين" class="w-full bg-gray-900 border border-gray-700 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50">
+                    </div>
+
+                    <!-- SUBMIT BUTTON -->
+                    <div class="pt-4">
+                        <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-500 hover:to-green-400 text-white font-black text-base sm:text-lg shadow-xl hover:shadow-green-500/20 transition-all transform active:scale-98 flex items-center justify-center space-x-2 space-x-reverse">
+                            <i class="fa-brands fa-whatsapp text-2xl"></i>
+                            <span id="btn-submit">تأكيد الحجز وإرسال الطلب عبر الواتساب</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER SECTION -->
+    <footer class="glass-panel border-t border-gray-800 py-8 text-center text-xs text-gray-400 mt-12">
+        <div class="max-w-7xl mx-auto px-4 space-y-3">
+            <p id="footer-text">جميع الحقوق محفوظة © <span id="current-year"></span> - مشوارك براحتك (Your Ride, Your Way)</p>
+            <p class="text-gray-500 text-[11px]" id="footer-sub">خدمة توصيل مخصصة بالساعات واليوم | Hyundai Elantra AD</p>
+        </div>
+    </footer>
+
+    <!-- SUCCESS / REDIRECT MODAL -->
+    <div id="booking-modal" class="fixed inset-0 bg-black/80 modal-blur z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-amber-500/50 text-center space-y-4 shadow-2xl transform transition-all scale-95 opacity-0" id="modal-content">
+            <div class="w-16 h-16 bg-emerald-500/20 border border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-400 text-3xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black text-white" id="modal-title">تم تسجيل الطلب بنجاح!</h3>
+            <p class="text-sm text-gray-300 leading-relaxed" id="modal-msg">
+                برجاء الانتظار للرد على تأكيد الحجز من خلال الواتساب الخاص بك... جاري توجيهك الآن للمحادثة.
+            </p>
+            <div class="pt-2">
+                <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-emerald-500 h-full w-full animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Set dynamic current year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Target WhatsApp & Call Number
+        const TARGET_PHONE = "+201091810410";
+        const CLEAN_PHONE = "201091810410";
+
+        // Multilingual Dictionary Data
+        const translations = {
+            ar: {
+                dir: "rtl",
+                brand_title: "مشوارك براحتك",
+                brand_tagline: "سائق خاص بالحجز المسبق بالساعات واليوم",
+                call_now: "اتصل الآن",
+                hero_badge: "خدمة مخصصة بالساعات واليوم داخل القاهرة والجيزة",
+                hero_title: `راحتك وأمانك في كل مشوار <br><span class="gold-text-gradient">سائق وعربية بالحجز المسبق</span>`,
+                hero_subtitle: "تأكيد المواعيد بالدقيقة، سيارة مريحة وحديثة (Hyundai Elantra AD)، وهدوء تام لتأدية أعمالك ومشاويرك اليومية بكل انسيابية بدون مشقة طلب سيارات متكررة.",
+                amenity_1: "النترا AD مريحة",
+                amenity_2: "إنترنت Wi-Fi سريع",
+                amenity_3: "شواحن فائقة السرعة",
+                amenity_4: "مياه باردة ومعقمات",
+                packages_heading: "باقات الخدمة المتاحة",
+                packages_subheading: "اختر الباقة المناسبة لاحتياجاتك اليومية ووفر وقتك ومجهودك",
+                pkg1_badge: "3 ساعات",
+                pkg1_title: "باقة المشاوير السريعة",
+                pkg1_desc: "بنوك، عيادات، مصالح حكومية، أو كذا مشوار في نفس المنطقة.",
+                pkg1_curr: "ج.م",
+                pkg1_btn: "اختيار الباقة",
+                pkg2_badge: "5 ساعات",
+                pkg2_popular: "الأكثر طلبًا",
+                pkg2_title: "باقة نصف اليوم",
+                pkg2_desc: "اجتماعات، تسوق، زيارات عائلية، أو يوم مشاوير متتالية.",
+                pkg2_curr: "ج.م",
+                pkg2_btn: "اختيار الباقة",
+                pkg3_badge: "8 ساعات",
+                pkg3_title: "باقة اليوم الكامل",
+                pkg3_desc: "يوم شغل كامل، ضيوف من خارج القاهرة، أو تنقلات خاصة متعددة.",
+                pkg3_curr: "ج.م",
+                pkg3_btn: "اختيار الباقة",
+                terms_notice: "<strong>ملحوظة هامة:</strong> هذه الساعات مقدرة على أن كل ساعة تساوي 20 كم، وفي حالة تعدي الكيلومترات المسموحة يتم حساب الكيلو الزيادة بـ 12.5 ج.م، وكل ساعة إضافية بـ 300 ج.م.",
+                form_heading: "نموذج الحجز المسبق",
+                form_subheading: "قم بتعبئة البيانات لتأكيد حجزك وتحويلك مباشرة لمحادثة الواتساب",
+                lbl_package: "اختر الباقة المطلوب حجزها",
+                opt_select: "-- اختر الباقة --",
+                opt_pkg1: "باقة المشاوير السريعة (3 ساعات - 900 ج.م)",
+                opt_pkg2: "باقة نصف اليوم (5 ساعات - 1,400 ج.م)",
+                opt_pkg3: "باقة اليوم الكامل (8 ساعات - 2,000 ج.م)",
+                lbl_name: "اسم العميل بالكامل",
+                lbl_phone: "رقم الواتساب للتواصل",
+                lbl_date: "تاريخ الحجز المطلوب",
+                lbl_time: "ساعة الالتقاء",
+                lbl_location: "مكان الالتقاء (العنوان بالتفصيل أو المنطقة)",
+                btn_submit: "تأكيد الحجز وإرسال الطلب عبر الواتساب",
+                modal_title: "تم تسجيل الطلب بنجاح!",
+                modal_msg: "برجاء الانتظار للرد على تأكيد الحجز من خلال الواتساب الخاص بك... جاري توجيهك الآن للمحادثة.",
+                footer_text: "جميع الحقوق محفوظة © " + new Date().getFullYear() + " - مشوارك براحتك (Your Ride, Your Way)",
+                footer_sub: "خدمة توصيل مخصصة بالساعات واليوم | Hyundai Elantra AD",
+                wa_pkg_3: "باقة المشاوير السريعة (3 ساعات)",
+                wa_pkg_5: "باقة نصف اليوم (5 ساعات)",
+                wa_pkg_8: "باقة اليوم الكامل (8 ساعات)"
+            },
+            en: {
+                dir: "ltr",
+                brand_title: "Your Ride, Your Way",
+                brand_tagline: "Dedicated Private Driver by Hour or Day",
+                call_now: "Call Now",
+                hero_badge: "Dedicated Hourly & Daily Service in Cairo & Giza",
+                hero_title: `Comfort & Safety for Every Journey <br><span class="gold-text-gradient">Pre-Booked Private Driver & Vehicle</span>`,
+                hero_subtitle: "Punctual scheduling, comfortable Hyundai Elantra AD, and peaceful rides to complete your daily errands smoothly without the hassle of repeated ride hailing.",
+                amenity_1: "Comfortable Elantra AD",
+                amenity_2: "Fast Wi-Fi Internet",
+                amenity_3: "Fast Chargers",
+                amenity_4: "Cold Water & Sanitizer",
+                packages_heading: "Available Service Packages",
+                packages_subheading: "Choose the ideal package for your day and save effort",
+                pkg1_badge: "3 Hours",
+                pkg1_title: "Quick Errands Package",
+                pkg1_desc: "Banks, clinics, government offices, or errands in the same area.",
+                pkg1_curr: "EGP",
+                pkg1_btn: "Select Package",
+                pkg2_badge: "5 Hours",
+                pkg2_popular: "Most Popular",
+                pkg2_title: "Half-Day Package",
+                pkg2_desc: "Meetings, shopping, family visits, or consecutive errands.",
+                pkg2_curr: "EGP",
+                pkg2_btn: "Select Package",
+                pkg3_badge: "8 Hours",
+                pkg3_title: "Full-Day Package",
+                pkg3_desc: "Full work day, hosting guests, or multiple private transfers.",
+                pkg3_curr: "EGP",
+                pkg3_btn: "Select Package",
+                terms_notice: "<strong>Important Note:</strong> Estimated at 20 km allowance per hour. Excess distance is charged at 12.5 EGP/km, and extra hours at 300 EGP/hour.",
+                form_heading: "Pre-Booking Form",
+                form_subheading: "Fill in the details to confirm your reservation via WhatsApp",
+                lbl_package: "Select Package",
+                opt_select: "-- Select Package --",
+                opt_pkg1: "Quick Errands (3 Hours - 900 EGP)",
+                opt_pkg2: "Half-Day (5 Hours - 1,400 EGP)",
+                opt_pkg3: "Full-Day (8 Hours - 2,000 EGP)",
+                lbl_name: "Full Customer Name",
+                lbl_phone: "WhatsApp Contact Number",
+                lbl_date: "Service Date",
+                lbl_time: "Pickup Time",
+                lbl_location: "Pickup Location (Address or Area)",
+                btn_submit: "Confirm Booking & Send via WhatsApp",
+                modal_title: "Booking Request Received!",
+                modal_msg: "Please wait for confirmation via your WhatsApp... Redirecting you now.",
+                footer_text: "All Rights Reserved © " + new Date().getFullYear() + " - Your Ride, Your Way",
+                footer_sub: "Dedicated Hourly & Daily Private Driver | Hyundai Elantra AD",
+                wa_pkg_3: "Quick Errands (3 Hours)",
+                wa_pkg_5: "Half-Day Package (5 Hours)",
+                wa_pkg_8: "Full-Day Package (8 Hours)"
+            },
+            de: {
+                dir: "ltr",
+                brand_title: "Ihr Weg, Ihr Komfort",
+                brand_tagline: "Privater Fahrer auf Stunden- oder Tagesbasis",
+                call_now: "Jetzt anrufen",
+                hero_badge: "Exklusiver Stunden- und Tagesservice in Kairo & Gizeh",
+                hero_title: `Komfort & Sicherheit für jede Fahrt <br><span class="gold-text-gradient">Privatfahrer im Voraus buchen</span>`,
+                hero_subtitle: "Pünktlicher Service, komfortabler Hyundai Elantra AD und eine ruhige Fahrt zur stressfreien Erledigung all Ihrer Termine.",
+                amenity_1: "Komfortabler Elantra AD",
+                amenity_2: "Schnelles Wi-Fi",
+                amenity_3: "Schnellladegeräte",
+                amenity_4: "Kaltes Wasser & Hygiene",
+                packages_heading: "Verfügbare Pakete",
+                packages_subheading: "Wählen Sie das passende Paket für Ihren Tag",
+                pkg1_badge: "3 Stunden",
+                pkg1_title: "Schnellerledigungen",
+                pkg1_desc: "Banken, Kliniken, Behörden oder Fahrten in derselben Gegend.",
+                pkg1_curr: "EGP",
+                pkg1_btn: "Paket wählen",
+                pkg2_badge: "5 Stunden",
+                pkg2_popular: "Sehr beliebt",
+                pkg2_title: "Halbtagspaket",
+                pkg2_desc: "Meetings, Shopping, Familienbesuche oder aufeinanderfolgende Termine.",
+                pkg2_curr: "EGP",
+                pkg2_btn: "Paket wählen",
+                pkg3_badge: "8 Stunden",
+                pkg3_title: "Ganztagspaket",
+                pkg3_desc: "Kompletter Arbeitstag, Betreuung von Gästen oder mehrere Fahrten.",
+                pkg3_curr: "EGP",
+                pkg3_btn: "Paket wählen",
+                terms_notice: "<strong>Wichtiger Hinweis:</strong> Inklusive 20 km pro Stunde. Zusätzliche Kilometer: 12,5 EGP/km. Zusätzliche Stunde: 300 EGP/Std.",
+                form_heading: "Buchungsformular",
+                form_subheading: "Füllen Sie das Formular aus für Ihre WhatsApp-Bestätigung",
+                lbl_package: "Paket auswählen",
+                opt_select: "-- Paket wählen --",
+                opt_pkg1: "Schnellerledigungen (3 Std. - 900 EGP)",
+                opt_pkg2: "Halbtagspaket (5 Std. - 1.400 EGP)",
+                opt_pkg3: "Ganztagspaket (8 Std. - 2.000 EGP)",
+                lbl_name: "Vollständiger Name",
+                lbl_phone: "WhatsApp-Nummer",
+                lbl_date: "Gewünschtes Datum",
+                lbl_time: "Abholzeit",
+                lbl_location: "Abholort (Adresse oder Gebiet)",
+                btn_submit: "Buchung bestätigen & via WhatsApp senden",
+                modal_title: "Anfrage erfolgreich erhalten!",
+                modal_msg: "Bitte warten Sie auf die WhatsApp-Bestätigung... Weiterleitung läuft.",
+                footer_text: "Alle Rechte vorbehalten © " + new Date().getFullYear() + " - Ihr Weg, Ihr Komfort",
+                footer_sub: "Exklusiver Privatfahrerservice | Hyundai Elantra AD",
+                wa_pkg_3: "Schnellerledigungen (3 Stunden)",
+                wa_pkg_5: "Halbtagspaket (5 Stunden)",
+                wa_pkg_8: "Ganztagspaket (8 Stunden)"
+            },
+            zh: {
+                dir: "ltr",
+                brand_title: "随心所行",
+                brand_tagline: "按小时/天预订的专属私人司机服务",
+                call_now: "立即拨打电话",
+                hero_badge: "开罗与吉萨专属按小时/按天私人出行服务",
+                hero_title: `每趟旅程的舒适与安全 <br><span class="gold-text-gradient">提前预订专属车辆与司机</span>`,
+                hero_subtitle: "准时守时，舒适的现代伊兰特 AD 轿车，让您从容高效完成各项日程，无需反复叫车。",
+                amenity_1: "舒适伊兰特 AD",
+                amenity_2: "高速 Wi-Fi",
+                amenity_3: "车载快速充电",
+                amenity_4: "冷饮水与消毒用品",
+                packages_heading: "服务套餐",
+                packages_subheading: "选择最适合您日常需求的出行套餐",
+                pkg1_badge: "3 小时",
+                pkg1_title: "快速办事套餐",
+                pkg1_desc: "银行、诊所、政府机构或同区域多点办事。",
+                pkg1_curr: "埃镑",
+                pkg1_btn: "选择套餐",
+                pkg2_badge: "5 小时",
+                pkg2_popular: "最受欢迎",
+                pkg2_title: "半天出行套餐",
+                pkg2_desc: "商务会议、购物、探亲或连续行程。",
+                pkg2_curr: "埃镑",
+                pkg2_btn: "选择套餐",
+                pkg3_badge: "8 小时",
+                pkg3_title: "全天出行套餐",
+                pkg3_desc: "全天工作、接待来宾或多次私人接送。",
+                pkg3_curr: "埃镑",
+                pkg3_btn: "选择套餐",
+                terms_notice: "<strong>重要提示：</strong> 每小时基础里程限 20 公里。超出里程按 12.5 埃镑/公里计算，超时按 300 埃镑/小时计算。",
+                form_heading: "预订表格",
+                form_subheading: "填写信息并通过 WhatsApp 直接确认",
+                lbl_package: "选择套餐",
+                opt_select: "-- 请选择套餐 --",
+                opt_pkg1: "快速办事套餐 (3小时 - 900 埃镑)",
+                opt_pkg2: "半天出行套餐 (5小时 - 1,400 埃镑)",
+                opt_pkg3: "全天出行套餐 (8小时 - 2,000 埃镑)",
+                lbl_name: "客户姓名",
+                lbl_phone: "WhatsApp 联系电话",
+                lbl_date: "预订日期",
+                lbl_time: "接送时间",
+                lbl_location: "接送地点（详细地址或区域）",
+                btn_submit: "确认预订并发送至 WhatsApp",
+                modal_title: "预订请求已提交！",
+                modal_msg: "请等待 WhatsApp 确认回复... 正在为您跳转。",
+                footer_text: "版权所有 © " + new Date().getFullYear() + " - 随心所行",
+                footer_sub: "按小时/按天专属私人司机服务 | 现代伊兰特 AD",
+                wa_pkg_3: "快速办事套餐 (3小时)",
+                wa_pkg_5: "半天出行套餐 (5小时)",
+                wa_pkg_8: "全天出行套餐 (8小时)"
+            }
+        };
+
+        let currentLang = 'ar';
+
+        // Dynamic Language Switcher
+        function changeLanguage(langKey) {
+            if (!translations[langKey]) return;
+            currentLang = langKey;
+            const data = translations[langKey];
+
+            // Set Document Direction & Lang attribute
+            document.documentElement.lang = langKey;
+            document.documentElement.dir = data.dir;
+
+            // Update DOM text elements
+            document.getElementById('brand-title').innerHTML = data.brand_title;
+            document.getElementById('brand-tagline').innerHTML = data.brand_tagline;
+            document.getElementById('phone-display-text').textContent = data.call_now;
+            document.getElementById('hero-badge').textContent = data.hero_badge;
+            document.getElementById('hero-title').innerHTML = data.hero_title;
+            document.getElementById('hero-subtitle').textContent = data.hero_subtitle;
+
+            document.getElementById('amenity-1').textContent = data.amenity_1;
+            document.getElementById('amenity-2').textContent = data.amenity_2;
+            document.getElementById('amenity-3').textContent = data.amenity_3;
+            document.getElementById('amenity-4').textContent = data.amenity_4;
+
+            document.getElementById('packages-heading').textContent = data.packages_heading;
+            document.getElementById('packages-subheading').textContent = data.packages_subheading;
+
+            document.getElementById('pkg1-badge').textContent = data.pkg1_badge;
+            document.getElementById('pkg1-title').textContent = data.pkg1_title;
+            document.getElementById('pkg1-desc').textContent = data.pkg1_desc;
+            document.getElementById('pkg1-curr').textContent = data.pkg1_curr;
+            document.getElementById('pkg1-btn').textContent = data.pkg1_btn;
+
+            document.getElementById('pkg2-badge').textContent = data.pkg2_badge;
+            document.getElementById('pkg2-popular').textContent = data.pkg2_popular;
+            document.getElementById('pkg2-title').textContent = data.pkg2_title;
+            document.getElementById('pkg2-desc').textContent = data.pkg2_desc;
+            document.getElementById('pkg2-curr').textContent = data.pkg2_curr;
+            document.getElementById('pkg2-btn').textContent = data.pkg2_btn;
+
+            document.getElementById('pkg3-badge').textContent = data.pkg3_badge;
+            document.getElementById('pkg3-title').textContent = data.pkg3_title;
+            document.getElementById('pkg3-desc').textContent = data.pkg3_desc;
+            document.getElementById('pkg3-curr').textContent = data.pkg3_curr;
+            document.getElementById('pkg3-btn').textContent = data.pkg3_btn;
+
+            document.getElementById('terms-notice').innerHTML = data.terms_notice;
+
+            document.getElementById('form-heading').textContent = data.form_heading;
+            document.getElementById('form-subheading').textContent = data.form_subheading;
+
+            document.getElementById('lbl-package').textContent = data.lbl_package;
+            document.getElementById('opt-select').textContent = data.opt_select;
+            document.getElementById('opt-pkg1').textContent = data.opt_pkg1;
+            document.getElementById('opt-pkg2').textContent = data.opt_pkg2;
+            document.getElementById('opt-pkg3').textContent = data.opt_pkg3;
+
+            document.getElementById('lbl-name').textContent = data.lbl_name;
+            document.getElementById('lbl-phone').textContent = data.lbl_phone;
+            document.getElementById('lbl-date').textContent = data.lbl_date;
+            document.getElementById('lbl-time').textContent = data.lbl_time;
+            document.getElementById('lbl-location').textContent = data.lbl_location;
+            document.getElementById('btn-submit').textContent = data.btn_submit;
+
+            document.getElementById('modal-title').textContent = data.modal_title;
+            document.getElementById('modal-msg').textContent = data.modal_msg;
+
+            document.getElementById('footer-text').textContent = data.footer_text;
+            document.getElementById('footer-sub').textContent = data.footer_sub;
+        }
+
+        // Toggle Hidden Phone Number & Trigger Dialing
+        function togglePhoneNumber() {
+            const btnText = document.getElementById('phone-display-text');
+            btnText.textContent = TARGET_PHONE;
+            
+            // Initiate Phone Call
+            setTimeout(() => {
+                window.location.href = `tel:${CLEAN_PHONE}`;
+            }, 300);
+        }
+
+        // Quick package select button action
+        function selectPackage(pkgVal) {
+            const dropdown = document.getElementById('field-package');
+            dropdown.value = pkgVal;
+            
+            // Scroll smoothly to form
+            document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Form Submit Handler & WhatsApp Redirection
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const pkgValue = document.getElementById('field-package').value;
+            const name = document.getElementById('field-name').value;
+            const phone = document.getElementById('field-phone').value;
+            const date = document.getElementById('field-date').value;
+            const time = document.getElementById('field-time').value;
+            const location = document.getElementById('field-location').value;
+
+            // Map Package Name according to active language
+            const dict = translations[currentLang];
+            let packageNameStr = "";
+            if (pkgValue === '3_hours') packageNameStr = dict.wa_pkg_3;
+            else if (pkgValue === '5_hours') packageNameStr = dict.wa_pkg_5;
+            else if (pkgValue === '8_hours') packageNameStr = dict.wa_pkg_8;
+
+            // Construct WhatsApp Message text
+            let messageText = "";
+            if (currentLang === 'ar') {
+                messageText = `*طلب حجز جديد - مشوارك براحتك*\n\n` +
+                              `📋 *الباقة:* ${packageNameStr}\n` +
+                              `👤 *اسم العميل:* ${name}\n` +
+                              `📱 *رقم الواتساب:* ${phone}\n` +
+                              `📅 *تاريخ الحجز:* ${date}\n` +
+                              `⏰ *ساعة الالتقاء:* ${time}\n` +
+                              `📍 *مكان الالتقاء:* ${location}\n\n` +
+                              `برجاء تأكيد الحجز المسبق وشكراً!`;
+            } else {
+                messageText = `*New Booking Request - Your Ride Your Way*\n\n` +
+                              `📋 *Package:* ${packageNameStr}\n` +
+                              `👤 *Name:* ${name}\n` +
+                              `📱 *WhatsApp:* ${phone}\n` +
+                              `📅 *Date:* ${date}\n` +
+                              `⏰ *Time:* ${time}\n` +
+                              `📍 *Pickup Location:* ${location}\n\n` +
+                              `Please confirm the reservation. Thank you!`;
+            }
+
+            // Show Confirmation Modal
+            const modal = document.getElementById('booking-modal');
+            const modalContent = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            // Redirect to WhatsApp after 2 seconds
+            setTimeout(() => {
+                const encodedMsg = encodeURIComponent(messageText);
+                const waUrl = `https://wa.me/${CLEAN_PHONE}?text=${encodedMsg}`;
+                window.location.href = waUrl;
+            }, 2000);
+        }
+
+        // Set default date picker min to today
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('field-date').setAttribute('min', todayStr);
+    </script>
+</body>
+</html>
