@@ -295,7 +295,9 @@ $("f").addEventListener("submit", async ev => {
   const msg = L.join("\n"); window._msg = msg;
   const url = "https://api.whatsapp.com/send?phone=" + CFG.whatsapp + "&text=" + encodeURIComponent(msg);
   $("okLink").href = url; $("ok").classList.add("show");
-  if (!window.open(url, "_blank")) location.href = url;
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
+    location.href = "whatsapp://send?phone=" + CFG.whatsapp + "&text=" + encodeURIComponent(msg);
+  else if (!window.open(url, "_blank")) location.href = url;
 });
 $("cp").addEventListener("click", async () => { try { await navigator.clipboard.writeText(window._msg || ""); $("cp").textContent = T("تم النسخ"); } catch (e) {} });
 $("lang").addEventListener("click", () => setLang(en ? "ar" : "en"));
