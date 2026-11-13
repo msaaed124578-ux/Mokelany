@@ -138,7 +138,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 18px 3
     <div class="row"><div class="f"><label class="l" for="nt">ملاحظات (اختياري)</label><textarea id="nt" placeholder="شنط كتير، كرسي أطفال، مشاوير متعددة..."></textarea></div></div>
 
     <button class="go" type="submit">ابعت طلب الحجز على واتساب</button>
-    <div class="ok" id="ok" role="status"><b>تم تجهيز طلبك.</b> لو واتساب ما فتحش تلقائيًا، <a id="okLink" href="#" target="_blank" rel="noopener">اضغط هنا</a>. الحجز بيتأكد بعد ردنا عليك.</div>
+    <div class="ok" id="ok" role="status"><b>تم تجهيز طلبك.</b> لو واتساب ما فتحش تلقائيًا، <a id="okLink" href="#" target="_blank" rel="noopener">اضغط هنا</a>. الحجز بيتأكد بعد ردنا عليك. <button type="button" id="cp" style="font:inherit;font-weight:600;margin-top:8px;padding:6px 12px;border:1.5px solid var(--wa);border-radius:8px;background:#fff;cursor:pointer">نسخ الرسالة</button></div>
   </form>
 </section>
 
@@ -196,7 +196,7 @@ const EN = {
 "مكان الالتقاء":"Pick-up location","الحي أو العنوان بالتفصيل":"District or full address","وجهتك (اختياري)":"Destination (optional)","المكان اللي رايحه":"Where you are going",
 "عدد الركاب":"Passengers","رقم الرحلة":"Flight number","ملاحظات (اختياري)":"Notes (optional)","شنط كتير، كرسي أطفال، مشاوير متعددة...":"Many bags, child seat, multiple stops...",
 "ابعت طلب الحجز على واتساب":"Send booking request on WhatsApp","تم تجهيز طلبك.":"Your request is ready.",
-"لو واتساب ما فتحش تلقائيًا،":"If WhatsApp did not open,","اضغط هنا":"tap here",". الحجز بيتأكد بعد ردنا عليك.":". The booking is confirmed once we reply.",
+"لو واتساب ما فتحش تلقائيًا،":"If WhatsApp did not open,","اضغط هنا":"tap here","نسخ الرسالة":"Copy message","تم النسخ":"Copied",". الحجز بيتأكد بعد ردنا عليك.":". The booking is confirmed once we reply.",
 "ليه مشوارك براحتك":"Why Your Ride, Your Way","سعر واضح":"Clear pricing","الباقة بسعر ثابت وقواعد الزيادة مكتوبة قدامك.":"A fixed package price, with extra-charge rules written upfront.",
 "التزام بالميعاد":"On time","الحجز المسبق معناه إن السائق جاهز قبل ميعادك.":"Booking ahead means your driver is ready before you are.",
 "سيارة مريحة":"Comfortable car","هيونداي إلنترا AD بتكييف قوي ومساحة للشنط.":"Hyundai Elantra AD with strong A/C and room for bags.",
@@ -292,10 +292,12 @@ $("f").addEventListener("submit", async ev => {
   if (c) L.push("التكلفة التقريبية: " + money(c.total));
   if (data.notes) L.push("ملاحظات: " + data.notes);
   if (en) L.push("لغة العميل: إنجليزي");
-  const url = "https://wa.me/" + CFG.whatsapp + "?text=" + encodeURIComponent(L.join("\n"));
+  const msg = L.join("\n"); window._msg = msg;
+  const url = "https://api.whatsapp.com/send?phone=" + CFG.whatsapp + "&text=" + encodeURIComponent(msg);
   $("okLink").href = url; $("ok").classList.add("show");
   if (!window.open(url, "_blank")) location.href = url;
 });
+$("cp").addEventListener("click", async () => { try { await navigator.clipboard.writeText(window._msg || ""); $("cp").textContent = T("تم النسخ"); } catch (e) {} });
 $("lang").addEventListener("click", () => setLang(en ? "ar" : "en"));
 try { if (localStorage.getItem("lang") === "en") setLang("en"); } catch (e) {}
 </script>
