@@ -77,18 +77,57 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 18px 3
 @media(min-width:760px){.wa-fab{inset-inline-start:auto;width:230px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
+<style>
+body{background:#eef1f7}
+.hero{background:radial-gradient(900px 420px at 88% -10%,rgba(242,169,0,.30),transparent 60%),linear-gradient(160deg,#0f1b33 0%,#1b3260 100%);position:relative;overflow:hidden;padding:22px 0 90px}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.2px);background-size:22px 22px;pointer-events:none}
+.hero .wrap{position:relative}
+.art{position:absolute;inset-inline-end:-40px;bottom:50px;width:min(340px,70vw);opacity:.07;pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:11px;background:var(--amber);color:#0f1b33;display:grid;place-items:center;font-weight:800;font-size:1.25rem}
+.eyebrow{display:inline-block;background:rgba(242,169,0,.15);color:#ffd36b;border:1px solid rgba(242,169,0,.35);border-radius:999px;padding:2px 14px;font-size:.85rem;font-weight:600}
+.hero h1{margin-top:14px;font-size:clamp(2rem,8vw,3.2rem);line-height:1.25}
+.hero p{max-width:30em;font-size:1.02rem}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{text-decoration:none;font-weight:800;border-radius:14px;padding:13px 22px}
+.btn.pri{background:var(--amber);color:#0f1b33;box-shadow:0 8px 22px rgba(242,169,0,.35)}
+.btn.ghost{border:1.5px solid rgba(255,255,255,.35);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px}
+.stats div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 6px;text-align:center}
+.stats b{display:block;font-size:1.15rem;color:#ffd36b}
+.stats span{display:block;font-size:.78rem;color:#cfd6e6;line-height:1.3}
+.card{border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(15,27,51,.10)}
+h2{display:flex;align-items:center;gap:10px}
+h2::before{content:"";width:6px;height:22px;border-radius:3px;background:var(--amber)}
+.pk .box{border-radius:16px;padding:14px 16px;transition:.15s}
+.pk input:checked+.box{box-shadow:0 6px 18px rgba(242,169,0,.28);background:linear-gradient(135deg,#fffaf0,#fff0c7)}
+.pk .pr{font-size:1.25rem}
+input:focus,select:focus,textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(242,169,0,.25);outline:0}
+.est{background:linear-gradient(135deg,#0f1b33,#1d3560);border-radius:16px;padding:16px 18px}
+button.go{background:linear-gradient(135deg,#1fb264,#118a4b);box-shadow:0 10px 24px rgba(26,158,85,.35);border-radius:14px}
+.steps{list-style:none;padding:0;display:grid;gap:14px;margin-top:14px}
+.steps li{display:grid;grid-template-columns:42px 1fr;column-gap:12px;align-items:center}
+.steps i{grid-row:span 2;width:42px;height:42px;border-radius:12px;background:#0f1b33;color:var(--amber);display:grid;place-items:center;font-style:normal;font-weight:800}
+.steps span{color:var(--muted);font-size:.93rem}
+.grid>div{background:#f6f8fc;border-radius:12px;padding:12px 14px}
+footer{background:#0f1b33;color:#aab3c8;padding:26px 18px 96px;margin-top:10px}
+</style>
 </head>
 <body>
 
-<header>
+<header class="hero">
 <div class="wrap">
   <div class="top">
-    <div class="brand">مشوارك براحتك</div>
+    <div class="brand"><span class="logo">م</span>مشوارك براحتك</div>
     <div class="r"><button class="lang" id="lang" type="button" aria-label="Language">EN</button><a class="call" id="callLink" href="#">اتصل الآن</a></div>
   </div>
+  <span class="eyebrow">القاهرة • بالحجز المسبق</span>
   <h1>سائق خاص بالساعة في القاهرة، من غير ما تدوّر على عربية كل مرة</h1>
   <p>احجز قبلها بيوم، والسائق يستناك في الميعاد. سيارة هيونداي إلنترا حديثة ومكيفة، وسعر معروف من قبل ما تتحرك.</p>
+  <div class="cta"><a class="btn pri" href="#book">احسب سعرك واحجز</a><a class="btn ghost" href="#why">ليه مشوارك براحتك</a></div>
   <div class="tags"><span>واي فاي</span><span>شواحن سريعة</span><span>مياه ومعقمات</span><span>توصيل المطار</span></div>
+  <div class="stats"><div><b>20 كم</b><span>مشمولة في كل ساعة</span></div><div><b>12.5 ج.م</b><span>الكيلو الإضافي</span></div><div><b>300 ج.م</b><span>الساعة الإضافية</span></div></div>
+  <svg class="art" viewBox="0 0 512 300" aria-hidden="true"><g fill="#fff"><rect x="40" y="150" width="432" height="90" rx="45"/><path d="M130 150l50-80h170l60 80z"/><circle cx="150" cy="240" r="48"/><circle cx="362" cy="240" r="48"/></g></svg>
 </div>
 </header>
 
@@ -142,6 +181,15 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 18px 3
   </form>
 </section>
 
+<section class="card" aria-labelledby="hw">
+  <h2 id="hw">إزاي بتحجز؟</h2>
+  <ol class="steps">
+    <li><i>1</i><b>اختار الباقة</b><span>وشوف السعر قبل ما تحجز.</span></li>
+    <li><i>2</i><b>ابعت الطلب</b><span>بياناتك بتوصلنا على واتساب.</span></li>
+    <li><i>3</i><b>السائق عندك</b><span>في المكان والميعاد اللي اتفقنا عليه.</span></li>
+  </ol>
+</section>
+
 <section class="card" aria-labelledby="why">
   <h2 id="why">ليه مشوارك براحتك</h2>
   <div class="grid c2" style="margin-top:12px">
@@ -184,7 +232,9 @@ const EN = {
 "سائق خاص بالساعة في القاهرة، من غير ما تدوّر على عربية كل مرة":"A private driver by the hour in Cairo, without hailing a new car every time",
 "احجز قبلها بيوم، والسائق يستناك في الميعاد. سيارة هيونداي إلنترا حديثة ومكيفة، وسعر معروف من قبل ما تتحرك.":"Book a day ahead and your driver is ready on time. A modern air-conditioned Hyundai Elantra, with the price known before you go.",
 "واي فاي":"Wi-Fi","شواحن سريعة":"Fast chargers","مياه ومعقمات":"Water & sanitizer","توصيل المطار":"Airport transfers",
-"احسب سعرك واحجز":"Estimate your price and book","اختار الباقة، وشوف التكلفة التقريبية، وبعدين ابعت الطلب على واتساب.":"Pick a package, see the estimated cost, then send your request on WhatsApp.",
+"احسب سعرك واحجز":"Estimate your price and book",
+"القاهرة • بالحجز المسبق":"Cairo • Pre-booked","20 كم":"20 km","مشمولة في كل ساعة":"Included every hour","الكيلو الإضافي":"Per extra km","الساعة الإضافية":"Per extra hour",
+"إزاي بتحجز؟":"How do you book?","اختار الباقة":"Choose a package","وشوف السعر قبل ما تحجز.":"See the price before you book.","ابعت الطلب":"Send your request","بياناتك بتوصلنا على واتساب.":"Your details reach us on WhatsApp.","السائق عندك":"Your driver arrives","في المكان والميعاد اللي اتفقنا عليه.":"At the place and time we agreed.","اختار الباقة، وشوف التكلفة التقريبية، وبعدين ابعت الطلب على واتساب.":"Pick a package, see the estimated cost, then send your request on WhatsApp.",
 "3 ساعات – مشاوير سريعة":"3 hours – Quick errands","بنوك، عيادات، مصالح • 60 كم":"Banks, clinics, offices • 60 km",
 "5 ساعات – نصف يوم":"5 hours – Half day","الأكثر طلبًا":"Most popular","اجتماعات، تسوق، زيارات • 100 كم":"Meetings, shopping, visits • 100 km",
 "8 ساعات – يوم كامل":"8 hours – Full day","شغل، ضيوف، تنقلات متعددة • 160 كم":"Work, guests, multiple stops • 160 km",
