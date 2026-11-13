@@ -283,7 +283,7 @@ $("f").addEventListener("submit", async ev => {
   const data = { package: k, name: $("nm").value.trim(), phone: toEn($("ph").value).trim(), date: $("dt").value, time: $("tm").value,
     pickup: $("pu").value.trim(), dest: $("ds").value.trim(), pax: $("pa").value, flight: $("fl").value.trim(), notes: $("nt").value.trim(),
     estimate: c ? c.total : null, createdAt: new Date().toISOString() };
-  try { await saveBooking(data); } catch (e) { console.error(e); }
+  try { await Promise.race([saveBooking(data), new Promise(r => setTimeout(r, 3000))]); } catch (e) { console.error(e); }
   const L = ["طلب حجز جديد – مشوارك براحتك", "الباقة: " + p.name, "الاسم: " + data.name, "الواتساب: " + data.phone,
     "التاريخ: " + data.date + " الساعة " + data.time, "مكان الالتقاء: " + data.pickup];
   if (data.dest) L.push("الوجهة: " + data.dest);
@@ -294,10 +294,20 @@ $("f").addEventListener("submit", async ev => {
   if (en) L.push("لغة العميل: إنجليزي");
   const url = "https://wa.me/" + CFG.whatsapp + "?text=" + encodeURIComponent(L.join("\n"));
   $("okLink").href = url; $("ok").classList.add("show");
-  window.open(url, "_blank", "noopener");
+  if (!window.open(url, "_blank")) location.href = url;
 });
 $("lang").addEventListener("click", () => setLang(en ? "ar" : "en"));
 try { if (localStorage.getItem("lang") === "en") setLang("en"); } catch (e) {}
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore, collection, addDoc, serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const db = getFirestore(initializeApp({apiKey:"AIzaSyAjJoCfOGYhnIbxGfChEJi2UPNOIBxyX-o",authDomain:"mashwarak-415e6.firebaseapp.com",projectId:"mashwarak-415e6",storageBucket:"mashwarak-415e6.firebasestorage.app",messagingSenderId:"459217746396",appId:"1:459217746396:web:94596ae1266ffcbb3b7719"}));
+window.saveBooking = d => addDoc(collection(db, "bookings"), {
+  package: d.package, name: d.name, phone: d.phone, date: d.date, time: d.time, pickup: d.pickup, dest: d.dest,
+  pax: d.pax, flight: d.flight, notes: d.notes, estimate: d.estimate, status: "new",
+  lang: document.documentElement.lang, createdAt: serverTimestamp()
+});
 </script>
 </body>
 </html>

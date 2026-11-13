@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة التحكم | مشوارك براحتك</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14213d;--mu:#5b6478;--ln:#d9dde6;--bg:#f6f7fa;--am:#f2a900;--ok:#1a9e55;--er:#b3261e}
+*{box-sizing:border-box;margin:0}
+body{font-family:Cairo,system-ui,Tahoma,sans-serif;background:var(--bg);color:var(--ink);padding-top:env(safe-area-inset-top,0)}
+[hidden]{display:none!important}
+header{background:var(--ink);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;position:sticky;top:0;z-index:4}
+header button{background:none;border:1px solid #5a6a96;color:#fff;border-radius:999px;padding:4px 14px;font:inherit}
+main{max-width:720px;margin:0 auto;padding:14px 14px 100px}
+nav{position:fixed;bottom:0;inset-inline:0;background:#fff;border-top:1px solid var(--ln);display:flex;padding-bottom:env(safe-area-inset-bottom,0);z-index:5}
+nav button{flex:1;background:none;border:0;font:inherit;font-size:.78rem;font-weight:600;padding:12px 2px;color:var(--mu)}
+nav button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--am)}
+.c{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;border-inline-start:5px solid var(--ln);font-size:.93rem}
+.c.new{border-color:var(--am)}.c.confirmed{border-color:#2b6cff}.c.done{border-color:var(--ok)}.c.cancelled{opacity:.6}
+.h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tg{font-size:.75rem;background:var(--bg);border-radius:6px;padding:0 8px}
+.bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.bt a,.bt button,.ch,button.pri{font:inherit;font-size:.85rem;font-weight:600;text-decoration:none;color:var(--ink);background:#fff;border:1.5px solid var(--ln);border-radius:8px;padding:6px 12px;cursor:pointer}
+button.pri{background:var(--ok);border-color:var(--ok);color:#fff;width:100%;padding:12px;font-size:1rem}
+.bt .g{background:var(--ok);color:#fff;border-color:var(--ok)}.bt .r{color:var(--er)}
+.chs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
+.ch.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+label{display:block;font-weight:600;font-size:.88rem;margin-top:10px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:1.5px solid var(--ln);border-radius:10px;background:#fff;color:var(--ink);margin-top:3px}
+.box{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px}
+.kp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.kp div{background:#fff;border-radius:12px;padding:12px}.kp b{display:block;font-size:1.25rem}
+.mu{color:var(--mu);font-size:.88rem}.er{color:var(--er)}.row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg)}
+#login{max-width:380px;margin:12vh auto;padding:0 18px}
+dialog{border:0;border-radius:14px;padding:16px;width:min(92vw,420px)}dialog::backdrop{background:rgba(0,0,0,.45)}
+h3{margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="login">
+  <h2>مشوارك براحتك – لوحة التحكم</h2>
+  <label for="em">الإيميل</label><input id="em" type="email" autocomplete="username">
+  <label for="pw">كلمة السر</label><input id="pw" type="password" autocomplete="current-password">
+  <p class="er" id="le" role="alert"></p>
+  <button class="pri" id="lb" style="margin-top:12px">دخول</button>
+</div>
+<div id="app" hidden>
+  <header><b>لوحة التحكم</b><button id="out">خروج</button></header>
+  <main id="v"></main>
+  <nav id="nav">
+    <button data-t="b" class="on">الحجوزات</button><button data-t="n">حجز جديد</button><button data-t="c">العملاء</button>
+    <button data-t="x">المصروفات</button><button data-t="r">التقارير</button><button data-t="p">الباقات</button>
+  </nav>
+  <dialog id="dlg"></dialog>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,doc,onSnapshot,addDoc,updateDoc,deleteDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app = initializeApp({apiKey:"AIzaSyAjJoCfOGYhnIbxGfChEJi2UPNOIBxyX-o",authDomain:"mashwarak-415e6.firebaseapp.com",projectId:"mashwarak-415e6",storageBucket:"mashwarak-415e6.firebasestorage.app",messagingSenderId:"459217746396",appId:"1:459217746396:web:94596ae1266ffcbb3b7719"});
+const auth = getAuth(app), db = getFirestore(app);
+const ADMIN = "loveelkelany36@gmail.com";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const m = n => (Math.round((+n || 0) * 100) / 100).toLocaleString("en-US") + " ج.م";
+const sum = (a, f) => a.reduce((t, x) => t + (+f(x) || 0), 0);
+const today = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const DEF = {p3: 900, p5: 1400, p8: 2000, kmH: 20, kmP: 12.5, hrP: 300};
+const PN = {"3": "3 ساعات", "5": "5 ساعات", "8": "8 ساعات", air: "مطار"};
+const ST = {new: "جديد", confirmed: "مؤكد", done: "منتهي", cancelled: "ملغي"};
+const CATS = ["وقود", "صيانة", "غسيل", "راتب سائق", "رسوم وتراخيص", "أخرى"];
+const hrs = pk => pk === "air" ? 2 : +pk;
+const tel = p => { p = String(p || "").replace(/\D/g, ""); return p.startsWith("0") ? "20" + p.slice(1) : p; };
+
+let B = [], X = [], C = {}, S = {...DEF}, tab = "b", flt = "open", rm = today.slice(0, 7), started = false;
+
+// ---------- الدخول ----------
+$("#lb").onclick = async () => {
+  $("#le").textContent = "";
+  try { await signInWithEmailAndPassword(auth, $("#em").value.trim(), $("#pw").value); }
+  catch (e) { $("#le").textContent = "الإيميل أو كلمة السر غير صحيحة."; }
+};
+$("#out").onclick = async () => { await signOut(auth); location.reload(); };
+onAuthStateChanged(auth, u => {
+  if (u && u.email === ADMIN) { $("#login").hidden = true; $("#app").hidden = false; start(); }
+  else { if (u) { signOut(auth); $("#le").textContent = "هذا الحساب غير مصرح له."; } $("#login").hidden = false; $("#app").hidden = true; }
+});
+
+function start() {
+  if (started) return; started = true;
+  const err = e => { $("#v").innerHTML = '<p class="er">تعذر تحميل البيانات (' + esc(e.code || e.message) + '). تأكد من نشر قواعد الأمان في Firestore.</p>'; };
+  onSnapshot(collection(db, "bookings"), s => { B = s.docs.map(d => ({id: d.id, ...d.data()})); render(); }, err);
+  onSnapshot(collection(db, "expenses"), s => { X = s.docs.map(d => ({id: d.id, ...d.data()})); render(); }, err);
+  onSnapshot(collection(db, "customers"), s => { C = {}; s.docs.forEach(d => C[d.id] = d.data()); render(); }, err);
+  onSnapshot(doc(db, "settings", "main"), s => { S = {...DEF, ...(s.data() || {})}; render(); }, err);
+}
+
+// ---------- العرض ----------
+function render(force) {
+  const a = document.activeElement;
+  if (!force && a && $("#v").contains(a) && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) return;
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.t === tab));
+  $("#v").innerHTML = {b: vBook, n: vNew, c: vCust, x: vExp, r: vRep, p: vPk}[tab]();
+}
+$("#nav").onclick = e => { const b = e.target.closest("button"); if (b) { tab = b.dataset.t; render(true); scrollTo(0, 0); } };
+
+function clash(b) {
+  const s1 = toMin(b.time), e1 = s1 + hrs(b.package) * 60;
+  return B.some(o => o.id !== b.id && o.date === b.date && (o.status === "new" || o.status === "confirmed") &&
+    s1 < toMin(o.time) + hrs(o.package) * 60 && toMin(o.time) < e1);
+}
+const toMin = t => { const [h, mi] = String(t || "0:0").split(":"); return +h * 60 + +mi; };
+
+function card(b) {
+  const cl = (b.status === "new" || b.status === "confirmed") && clash(b);
+  const act = {
+    new: [["st", "confirmed", "تأكيد", "g"], ["st", "cancelled", "إلغاء", "r"]],
+    confirmed: [["fin", "", "إنهاء وحساب", "g"], ["st", "cancelled", "إلغاء", "r"]],
+    done: [["fin", "", "تعديل الحساب", ""]],
+    cancelled: [["st", "new", "إعادة فتح", ""]]
+  }[b.status] || [];
+  return `<div class="c ${b.status}"><div class="h"><b>${esc(b.name)}</b><span class="tg">${ST[b.status] || b.status}</span></div>
+  <div>${esc(b.date)} – ${esc(b.time)} • ${PN[b.package] || ""}${b.pax ? " • " + esc(b.pax) + " راكب" : ""}</div>
+  <div class="mu">من: ${esc(b.pickup)}${b.dest ? " إلى: " + esc(b.dest) : ""}${b.flight ? " • رحلة " + esc(b.flight) : ""}</div>
+  ${b.notes ? `<div class="mu">ملاحظات: ${esc(b.notes)}</div>` : ""}
+  ${b.status === "done" ? `<div><b>الإجمالي: ${m(b.total)}</b>${b.actualKm ? " • " + b.actualKm + " كم" : ""}</div>` : (b.estimate ? `<div class="mu">تقدير: ${m(b.estimate)}</div>` : "")}
+  ${cl ? '<div class="er">تنبيه: يوجد حجز آخر في نفس الوقت تقريبًا</div>' : ""}
+  <div class="bt"><a class="g" href="https://wa.me/${tel(b.phone)}" target="_blank" rel="noopener">واتساب</a><a href="tel:${esc(b.phone)}">اتصال</a>
+  ${act.map(([a, v, t, k]) => `<button class="${k}" data-a="${a}" data-id="${b.id}" data-v="${v}">${t}</button>`).join("")}
+  <button class="r" data-a="del" data-id="${b.id}">حذف</button></div></div>`;
+}
+function vBook() {
+  const f = {open: b => b.status === "new" || b.status === "confirmed", done: b => b.status === "done", cancelled: b => b.status === "cancelled", all: () => 1}[flt];
+  const L = B.filter(f).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)); if (flt !== "open") L.reverse();
+  const nw = B.filter(b => b.status === "new").length;
+  const chips = [["open", "القادمة" + (nw ? " (" + nw + " جديد)" : "")], ["done", "المنتهية"], ["cancelled", "الملغية"], ["all", "الكل"]]
+    .map(([k, t]) => `<button class="ch ${flt === k ? "on" : ""}" data-a="flt" data-v="${k}">${t}</button>`).join("");
+  return `<div class="chs">${chips}</div>` + (L.map(card).join("") || '<p class="mu">لا توجد حجوزات هنا.</p>');
+}
+
+function vNew() {
+  return `<div class="box"><h3>تسجيل حجز يدوي</h3><p class="mu">للحجوزات اللي جاتلك تليفون أو واتساب مباشرة. بيتسجل العميل تلقائيًا.</p>
+  <label>الاسم<input id="n_nm"></label><label>رقم الموبايل<input id="n_ph" type="tel" inputmode="tel"></label>
+  <label>الباقة<select id="n_pk"><option value="3">3 ساعات</option><option value="5" selected>5 ساعات</option><option value="8">8 ساعات</option><option value="air">مطار</option></select></label>
+  <label>التاريخ<input id="n_dt" type="date" value="${today}"></label><label>الساعة<input id="n_tm" type="time"></label>
+  <label>مكان الالتقاء<input id="n_pu"></label><label>الوجهة<input id="n_ds"></label>
+  <label>ملاحظات<textarea id="n_nt" rows="2"></textarea></label><p class="er" id="n_e"></p>
+  <button class="pri" data-a="add">حفظ الحجز (مؤكد)</button></div>`;
+}
+
+function vCust() {
+  const g = {};
+  B.forEach(b => { const k = tel(b.phone); if (!k) return; const o = g[k] ??= {phone: b.phone, name: b.name, n: 0, spent: 0, last: ""};
+    if (b.status !== "cancelled") o.n++; if (b.status === "done") o.spent += +b.total || 0; if ((b.date || "") > o.last) { o.last = b.date; o.name = b.name; } });
+  const L = Object.entries(g).sort((a, b) => b[1].n - a[1].n);
+  return `<p class="mu">${L.length} عميل</p>` + (L.map(([k, o]) => `<div class="c"><div class="h"><b>${esc(o.name)}</b><span class="tg">${o.n} مشوار</span></div>
+    <div>${esc(o.phone)} • إجمالي الإنفاق ${m(o.spent)} • آخر مشوار ${esc(o.last)}</div>
+    ${C[k]?.notes ? `<div class="mu">ملاحظة: ${esc(C[k].notes)}</div>` : ""}
+    <div class="bt"><a class="g" href="https://wa.me/${k}" target="_blank" rel="noopener">واتساب</a><a href="tel:${esc(o.phone)}">اتصال</a>
+    <button data-a="note" data-v="${k}" data-n="${esc(o.name)}">ملاحظة</button></div></div>`).join("") || '<p class="mu">لا يوجد عملاء بعد.</p>');
+}
+
+function vExp() {
+  const L = [...X].sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 40);
+  return `<div class="box"><h3>إضافة مصروف</h3><label>التاريخ<input id="x_dt" type="date" value="${today}"></label>
+  <label>النوع<select id="x_ct">${CATS.map(c => `<option>${c}</option>`).join("")}</select></label>
+  <label>المبلغ (ج.م)<input id="x_am" type="number" inputmode="decimal"></label><label>ملاحظة<input id="x_nt"></label>
+  <p class="er" id="x_e"></p><button class="pri" data-a="xadd" style="margin-top:8px">حفظ المصروف</button></div>` +
+  L.map(x => `<div class="row"><span>${esc(x.date)} – ${esc(x.cat)}${x.note ? " (" + esc(x.note) + ")" : ""}</span><span><b>${m(x.amount)}</b> <button class="ch r" data-a="xdel" data-id="${x.id}">حذف</button></span></div>`).join("");
+}
+
+function vRep() {
+  const D = B.filter(b => b.status === "done" && (b.date || "").startsWith(rm)), E = X.filter(x => (x.date || "").startsWith(rm));
+  const rev = sum(D, b => b.total), ex = sum(E, x => x.amount), pr = rev - ex;
+  const bc = CATS.map(c => [c, sum(E.filter(x => x.cat === c), x => x.amount)]).filter(a => a[1]);
+  const bp = Object.keys(PN).map(k => [PN[k], D.filter(b => b.package === k).length, sum(D.filter(b => b.package === k), b => b.total)]).filter(a => a[1]);
+  const xk = sum(D, b => b.extraKmCost);
+  return `<label style="margin:0 0 10px">الشهر<input id="rm" type="month" value="${rm}"></label>
+  <div class="kp"><div>الإيرادات<b>${m(rev)}</b></div><div>المصروفات<b>${m(ex)}</b></div>
+  <div>صافي الربح<b style="color:${pr < 0 ? "var(--er)" : "var(--ok)"}">${m(pr)}</b></div><div>عدد المشاوير<b>${D.length}</b></div></div>
+  <div class="box"><h3>تفاصيل</h3><div class="row"><span>متوسط المشوار</span><b>${D.length ? m(rev / D.length) : "-"}</b></div>
+  <div class="row"><span>إيراد الكيلومترات الإضافية</span><b>${m(xk)}</b></div>
+  ${bp.map(a => `<div class="row"><span>${a[0]} (${a[1]} مشوار)</span><b>${m(a[2])}</b></div>`).join("")}</div>
+  <div class="box"><h3>المصروفات حسب النوع</h3>${bc.map(a => `<div class="row"><span>${a[0]}</span><b>${m(a[1])}</b></div>`).join("") || '<p class="mu">لا توجد مصروفات.</p>'}</div>`;
+}
+
+function vPk() {
+  const f = (k, t) => `<label>${t}<input id="s_${k}" type="number" step="0.5" value="${S[k]}"></label>`;
+  return `<div class="box"><h3>الباقات والأسعار</h3><p class="mu">تُستخدم هذه الأسعار في حساب الرحلات داخل اللوحة. الأسعار المعروضة في الموقع تتغير من ملف index.html.</p>
+  ${f("p3", "باقة 3 ساعات (ج.م)")}${f("p5", "باقة 5 ساعات (ج.م)")}${f("p8", "باقة 8 ساعات (ج.م)")}
+  ${f("kmH", "الكيلومترات المسموحة لكل ساعة")}${f("kmP", "سعر الكيلو الزيادة (ج.م)")}${f("hrP", "سعر الساعة الإضافية (ج.م)")}
+  <button class="pri" data-a="pks" style="margin-top:14px">حفظ</button></div>`;
+}
+
+// ---------- الإجراءات ----------
+$("#v").onchange = e => { if (e.target.id === "rm" && e.target.value) { rm = e.target.value; render(true); } };
+$("#v").onclick = async e => {
+  const t = e.target.closest("[data-a]"); if (!t) return;
+  const a = t.dataset.a, id = t.dataset.id, v = t.dataset.v, b = B.find(x => x.id === id), val = i => $(i).value.trim();
+  try {
+    if (a === "flt") { flt = v; render(true); }
+    else if (a === "st") {
+      if (v === "confirmed" && clash(b) && !confirm("يوجد حجز آخر في نفس الوقت تقريبًا. تأكد على أي حال؟")) return;
+      await updateDoc(doc(db, "bookings", id), {status: v});
+    }
+    else if (a === "fin") openFin(b);
+    else if (a === "del") { if (confirm("حذف الحجز نهائيًا؟")) await deleteDoc(doc(db, "bookings", id)); }
+    else if (a === "note") { const n = prompt("ملاحظة عن العميل:", C[v]?.notes || ""); if (n !== null) await setDoc(doc(db, "customers", v), {notes: n, name: t.dataset.n}, {merge: true}); }
+    else if (a === "add") {
+      if (val("#n_nm").length < 2 || !val("#n_ph") || !val("#n_dt") || !val("#n_tm") || !val("#n_pu")) { $("#n_e").textContent = "املأ الاسم والموبايل والتاريخ والساعة ومكان الالتقاء."; return; }
+      const pk = val("#n_pk");
+      await addDoc(collection(db, "bookings"), {package: pk, name: val("#n_nm"), phone: val("#n_ph"), date: val("#n_dt"), time: val("#n_tm"), pickup: val("#n_pu"), dest: val("#n_ds"), pax: "", flight: "", notes: val("#n_nt"), estimate: pk === "air" ? null : S["p" + pk], status: "confirmed", source: "manual", createdAt: serverTimestamp()});
+      tab = "b"; flt = "open"; render(true);
+    }
+    else if (a === "xadd") {
+      const am = parseFloat(val("#x_am"));
+      if (!(am > 0) || !val("#x_dt")) { $("#x_e").textContent = "اكتب المبلغ والتاريخ."; return; }
+      await addDoc(collection(db, "expenses"), {date: val("#x_dt"), cat: val("#x_ct"), amount: am, note: val("#x_nt"), createdAt: serverTimestamp()});
+      render(true);
+    }
+    else if (a === "xdel") { if (confirm("حذف المصروف؟")) await deleteDoc(doc(db, "expenses", id)); }
+    else if (a === "pks") {
+      const o = {}; for (const k of Object.keys(DEF)) o[k] = parseFloat(val("#s_" + k)) || DEF[k];
+      await setDoc(doc(db, "settings", "main"), o, {merge: true}); alert("تم الحفظ");
+    }
+  } catch (er) { alert("حدث خطأ: " + (er.code || er.message)); }
+};
+
+function openFin(b) {
+  const d = $("#dlg"), air = b.package === "air", base = air ? (b.finalBase || b.estimate || 0) : S["p" + b.package];
+  d.innerHTML = `<h3>حساب الرحلة</h3><p>${esc(b.name)} – ${PN[b.package]}</p>
+  ${air ? `<label>سعر المشوار<input id="fb" type="number" value="${base}"></label>` :
+  `<label>الكيلومترات الفعلية<input id="fk" type="number" value="${b.actualKm || ""}"></label><label>ساعات إضافية<input id="fh" type="number" value="${b.extraHours || 0}"></label>`}
+  <label>الإجمالي (ج.م)<input id="ft" type="number" value="${b.total || base}"></label><p class="mu" id="fd"></p>
+  <div class="bt"><button class="pri" id="fs" style="width:auto">حفظ كمنتهي</button><button id="fc">إلغاء</button></div>`;
+  let exKm = 0, xh = 0, km = 0;
+  const calc = () => {
+    if (air) { $("#ft").value = parseFloat($("#fb").value) || 0; return; }
+    km = parseFloat($("#fk").value) || 0; xh = Math.max(0, parseInt($("#fh").value) || 0);
+    exKm = Math.max(0, km - (hrs(b.package) + xh) * S.kmH);
+    $("#ft").value = base + exKm * S.kmP + xh * S.hrP;
+    $("#fd").textContent = `الباقة ${m(base)} + ${exKm} كم زيادة × ${S.kmP} + ${xh} ساعة × ${S.hrP}`;
+  };
+  d.querySelectorAll("#fk,#fh,#fb").forEach(i => i.oninput = calc);
+  if (!b.total) calc(); else if (!air) { km = b.actualKm || 0; xh = b.extraHours || 0; exKm = Math.max(0, km - (hrs(b.package) + xh) * S.kmH); }
+  $("#fc").onclick = () => d.close();
+  $("#fs").onclick = async () => {
+    try {
+      await updateDoc(doc(db, "bookings", b.id), {status: "done", actualKm: km, extraHours: xh, extraKmCost: exKm * S.kmP, finalBase: air ? parseFloat($("#fb").value) || 0 : base, total: parseFloat($("#ft").value) || 0, finishedAt: serverTimestamp()});
+      d.close();
+    } catch (er) { alert("حدث خطأ: " + (er.code || er.message)); }
+  };
+  d.showModal();
+}
+</script>
+</body>
+</html>
